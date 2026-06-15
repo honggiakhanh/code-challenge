@@ -1,19 +1,19 @@
-import type { Token } from '@/lib/tokens'
-import { TokenIcon } from '@/components/TokenIcon'
+import type { Token } from "@/lib/tokens";
+import { TokenIcon } from "@/components/TokenIcon";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from "@/components/ui/select";
 
 type TokenSelectProps = {
-  tokens: Token[]
-  value: string
-  onChange: (currency: string) => void
-  disabled?: boolean
-}
+  tokens: Token[];
+  value: string;
+  onChange: (currency: string) => void;
+  disabled?: boolean;
+};
 
 export function TokenSelect({
   tokens,
@@ -23,10 +23,10 @@ export function TokenSelect({
 }: TokenSelectProps) {
   return (
     <Select value={value} onValueChange={onChange} disabled={disabled}>
-      <SelectTrigger className="min-w-[132px] bg-background/80">
+      <SelectTrigger className="max-h-10 min-w-[140px] bg-background/80">
         <SelectValue placeholder="Token" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent position="popper" className="max-h-60">
         {tokens.map((token) => (
           <SelectItem key={token.currency} value={token.currency}>
             <span className="flex items-center gap-2">
@@ -37,5 +37,5 @@ export function TokenSelect({
         ))}
       </SelectContent>
     </Select>
-  )
+  );
 }

@@ -83,7 +83,7 @@ function SwapField({
           readOnly={amountReadOnly}
           aria-invalid={Boolean(error)}
           className={cn(
-            'h-11 border-0 bg-transparent px-0 text-2xl font-semibold shadow-none focus-visible:ring-0',
+            'h-11 flex-1 rounded-lg border border-border/60 bg-background/80 px-3 text-2xl font-semibold',
             amountReadOnly && 'cursor-default',
           )}
         />

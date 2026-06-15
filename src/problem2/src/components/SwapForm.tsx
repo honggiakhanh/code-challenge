@@ -41,7 +41,7 @@ type SwapFieldProps = {
   tokens: ReturnType<typeof usePrices>['tokens']
   onTokenChange: (currency: string) => void
   usdValue: number | null
-  readOnly?: boolean
+  amountReadOnly?: boolean
   error?: string
 }
 
@@ -53,7 +53,7 @@ function SwapField({
   tokens,
   onTokenChange,
   usdValue,
-  readOnly,
+  amountReadOnly,
   error,
 }: SwapFieldProps) {
   return (
@@ -80,18 +80,17 @@ function SwapField({
               ? (event) => onAmountChange(event.target.value)
               : undefined
           }
-          readOnly={readOnly}
+          readOnly={amountReadOnly}
           aria-invalid={Boolean(error)}
           className={cn(
             'h-11 border-0 bg-transparent px-0 text-2xl font-semibold shadow-none focus-visible:ring-0',
-            readOnly && 'cursor-default',
+            amountReadOnly && 'cursor-default',
           )}
         />
         <TokenSelect
           tokens={tokens}
           value={token}
           onChange={onTokenChange}
-          disabled={readOnly}
         />
       </div>
 
@@ -260,7 +259,7 @@ export function SwapForm() {
               setSubmitted(false)
             }}
             usdValue={toUsd}
-            readOnly
+            amountReadOnly
           />
 
           {rate != null && fromToken && toToken && (

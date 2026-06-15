@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import { ArrowDownUp, CheckCircle2 } from 'lucide-react'
+import { ArrowDownUp, CheckCircle2, Loader2 } from 'lucide-react'
 import { usePrices } from '@/hook/usePrices'
 import { TokenSelect } from '@/components/TokenSelect'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -108,7 +108,36 @@ export function SwapForm() {
   const [fromToken, setFromToken] = useState('')
   const [toToken, setToToken] = useState('')
   const [fromAmount, setFromAmount] = useState('')
+  const [confirming, setConfirming] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+
+  const CONFIRM_LOADING_MS = 1000
+  const CONFIRM_DISMISS_MS = 4000
+
+  useEffect(() => {
+    if (!confirming) {
+      return
+    }
+
+    const timer = window.setTimeout(() => {
+      setConfirming(false)
+      setSubmitted(true)
+    }, CONFIRM_LOADING_MS)
+
+    return () => window.clearTimeout(timer)
+  }, [confirming])
+
+  useEffect(() => {
+    if (!submitted) {
+      return
+    }
+
+    const timer = window.setTimeout(() => {
+      setSubmitted(false)
+    }, CONFIRM_DISMISS_MS)
+
+    return () => window.clearTimeout(timer)
+  }, [submitted])
 
   useEffect(() => {
     if (tokens.length === 0 || (fromToken && toToken)) {
@@ -166,21 +195,27 @@ export function SwapForm() {
     return null
   }, [fromAmount, parsedAmount, fromToken, toToken, rate])
 
-  const canSubmit = !loading && !error && validationError == null
+  const canSubmit = !loading && !error && validationError == null && !confirming
+
+  function resetConfirmState() {
+    setConfirming(false)
+    setSubmitted(false)
+  }
 
   function handleFlip() {
     setFromToken(toToken)
     setToToken(fromToken)
-    setSubmitted(false)
+    resetConfirmState()
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (!canSubmit) {
+    if (!canSubmit || confirming) {
       return
     }
 
-    setSubmitted(true)
+    setSubmitted(false)
+    setConfirming(true)
   }
 
   if (loading) {
@@ -224,13 +259,13 @@ export function SwapForm() {
             amount={fromAmount}
             onAmountChange={(value) => {
               setFromAmount(value)
-              setSubmitted(false)
+              resetConfirmState()
             }}
             token={fromToken}
             tokens={tokens}
             onTokenChange={(currency) => {
               setFromToken(currency)
-              setSubmitted(false)
+              resetConfirmState()
             }}
             usdValue={fromUsd}
             error={fromAmount ? validationError ?? undefined : undefined}
@@ -256,7 +291,7 @@ export function SwapForm() {
             tokens={tokens}
             onTokenChange={(currency) => {
               setToToken(currency)
-              setSubmitted(false)
+              resetConfirmState()
             }}
             usdValue={toUsd}
             amountReadOnly
@@ -268,8 +303,19 @@ export function SwapForm() {
             </p>
           )}
 
-          <Button type="submit" className="h-11 w-full text-sm font-semibold" disabled={!canSubmit}>
-            Confirm swap
+          <Button
+            type="submit"
+            className="h-11 w-full text-sm font-semibold"
+            disabled={!canSubmit || confirming}
+          >
+            {confirming ? (
+              <>
+                <Loader2 className="size-4 animate-spin" />
+                Confirming swap...
+              </>
+            ) : (
+              'Confirm swap'
+            )}
           </Button>
 
           {submitted && canSubmit && (

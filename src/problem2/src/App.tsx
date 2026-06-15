@@ -10,7 +10,7 @@ function App() {
 
       <button type="submit">CONFIRM SWAP</button>
     </form>
-  )
+  );
 }
 
-export default App
+export default App;

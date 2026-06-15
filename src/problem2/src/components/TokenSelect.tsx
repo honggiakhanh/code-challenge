@@ -8,6 +8,7 @@ import {
   ComboboxItem,
   ComboboxList,
 } from '@/components/ui/combobox'
+import { InputGroupAddon } from '@/components/ui/input-group'
 
 type TokenSelectProps = {
   tokens: Token[]
@@ -39,7 +40,13 @@ export function TokenSelect({
         placeholder="Token"
         disabled={disabled}
         className="h-11 min-w-[160px] bg-background/80"
-      />
+      >
+        {value ? (
+          <InputGroupAddon>
+            <TokenIcon currency={value} />
+          </InputGroupAddon>
+        ) : null}
+      </ComboboxInput>
       <ComboboxContent>
         <ComboboxEmpty>No token found.</ComboboxEmpty>
         <ComboboxList className="max-h-60">

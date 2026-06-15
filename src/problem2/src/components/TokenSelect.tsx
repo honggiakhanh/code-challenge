@@ -1,19 +1,20 @@
-import type { Token } from "@/lib/tokens";
-import { TokenIcon } from "@/components/TokenIcon";
+import type { Token } from '@/lib/tokens'
+import { TokenIcon } from '@/components/TokenIcon'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from '@/components/ui/combobox'
 
 type TokenSelectProps = {
-  tokens: Token[];
-  value: string;
-  onChange: (currency: string) => void;
-  disabled?: boolean;
-};
+  tokens: Token[]
+  value: string
+  onChange: (currency: string) => void
+  disabled?: boolean
+}
 
 export function TokenSelect({
   tokens,
@@ -21,21 +22,37 @@ export function TokenSelect({
   onChange,
   disabled,
 }: TokenSelectProps) {
+  const currencies = tokens.map((token) => token.currency)
+
   return (
-    <Select value={value} onValueChange={onChange} disabled={disabled}>
-      <SelectTrigger className="max-h-10 min-w-[140px] bg-background/80">
-        <SelectValue placeholder="Token" />
-      </SelectTrigger>
-      <SelectContent position="popper" className="max-h-60">
-        {tokens.map((token) => (
-          <SelectItem key={token.currency} value={token.currency}>
-            <span className="flex items-center gap-2">
-              <TokenIcon currency={token.currency} />
-              <span>{token.currency}</span>
-            </span>
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
+    <Combobox
+      items={currencies}
+      value={value || null}
+      onValueChange={(currency) => {
+        if (currency) {
+          onChange(currency)
+        }
+      }}
+      disabled={disabled}
+    >
+      <ComboboxInput
+        placeholder="Token"
+        disabled={disabled}
+        className="h-11 min-w-[160px] bg-background/80"
+      />
+      <ComboboxContent>
+        <ComboboxEmpty>No token found.</ComboboxEmpty>
+        <ComboboxList className="max-h-60">
+          {(currency) => (
+            <ComboboxItem key={currency} value={currency}>
+              <span className="flex items-center gap-2">
+                <TokenIcon currency={currency} />
+                <span>{currency}</span>
+              </span>
+            </ComboboxItem>
+          )}
+        </ComboboxList>
+      </ComboboxContent>
+    </Combobox>
+  )
 }
